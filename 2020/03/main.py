@@ -37,7 +37,7 @@ def part_two(data):
 
 def main():
   print()
-  print("[XXXX] Day XX")
+  print("[2020] Day 03")
   print("-------------")
 
   print("Parsing input . . .")
