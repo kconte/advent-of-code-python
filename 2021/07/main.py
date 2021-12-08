@@ -15,11 +15,11 @@ def part_one(data):
   furthest = max(data)
   closest = min(data)
 
-  pos, min_cost = 0, 2**64
+  min_cost = 2**64
   for i in range(closest, furthest + 1):
     cost = sum(abs(i - crab) for crab in data)
     if cost < min_cost:
-      pos, min_cost = i, cost
+      min_cost = cost
 
   return min_cost
 
