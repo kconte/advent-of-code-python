@@ -26,14 +26,15 @@ def parse_input(filename):
   for line in raw:
     line = line.split("-")
     append_or_default(data, line[0], line[1])
-    append_or_default(data, line[1], line[0])
+    if line[0] != "start" and line[1] != "end":
+      append_or_default(data, line[1], line[0])
 
   return data
 
-def bfs(graph, src, dst):
-  paths = []
-  queue = Queue()
+def bfs(graph, src, dst, node_check):
+  paths = 0
   path = []
+  queue = Queue()
   path.append(src)
   queue.enqueue(path)
 
@@ -42,48 +43,52 @@ def bfs(graph, src, dst):
     last = path[-1]
 
     if last == dst:
-      paths.append(path.copy())
+      paths += 1
       continue
 
     for child in graph[last]:
-      if child in path and child.islower():
-        continue
-      new_path = path.copy() + [child]
-      queue.enqueue(new_path)
+      if node_check(graph, path, child):
+        new_path = path.copy() + [child]
+        queue.enqueue(new_path)
+
 
   return paths
 
-def bfs_modified(graph, src, dst):
-  paths = []
-  path = []
-  queue = Queue()
-  path.append(src)
-  queue.enqueue(path)
+def histogram(xs):
+  def inc_or_def(d, k):
+    if k in d:
+      d[k] += 1
+    else:
+      d[k] = 1
 
-  while queue:
-    path = queue.dequeue()
+  histo = {}
+  for x in xs:
+    inc_or_def(histo, x)
 
-    if path[-1] == dst:
-      paths.append(path.copy())
-      continue
-
-    for child in graph[path[-1]]:
-      pass
-
-  return paths
-
+  return histo
 
 def part_one(data):
-  paths = bfs(data, "start", "end")
-  return len(paths)
+  def node_check(graph, path, node):
+    return not (node in path and node.islower())
+
+  paths = bfs(data, "start", "end", node_check)
+  return paths
 
 def part_two(data):
-  paths = bfs_modified(data, "start", "end")
+  def node_check(graph, path, node):
+    smalls = [k for k in graph if k.islower() and k not in ["start", "end"]]
+    counts = histogram([n for n in path if n in smalls])
+    if node == "start":
+      return False
+    elif node not in counts:
+      return True
+    elif counts[node] == 1 and (len([(k, v) for k, v in counts.items() if k != node and v == 2]) == 0):
+      return True
+    return False
 
-  for path in paths:
-    print(" -> ".join(path))
+  paths = bfs(data, "start", "end", node_check)
 
-  raise Exception("no solution found")
+  return paths
 
 def main():
   filename = "./input.txt"
