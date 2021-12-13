@@ -26,10 +26,8 @@ def update_population(population):
 
 def part_one(data):
   population = data.copy()
-  print(population)
   for _ in range(80):
     population = update_population(population)
-    print(population)
   return sum(population)
 
 def part_two(data):
